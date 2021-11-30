@@ -44,7 +44,6 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
@@ -54,11 +53,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * worker server
  */
 @ComponentScan(value = "org.apache.dolphinscheduler", excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.REGEX, pattern = {
-                "org.apache.dolphinscheduler.server.master.*",
-                "org.apache.dolphinscheduler.server.monitor.*",
-                "org.apache.dolphinscheduler.server.log.*"
-        })
+    @ComponentScan.Filter(type = FilterType.REGEX, pattern = {
+        "org.apache.dolphinscheduler.server.master.*",
+        "org.apache.dolphinscheduler.server.monitor.*",
+        "org.apache.dolphinscheduler.server.log.*",
+        "org.apache.dolphinscheduler.alert.*"
+    })
 })
 @EnableTransactionManagement
 public class WorkerServer implements IStoppable {
@@ -113,7 +113,9 @@ public class WorkerServer implements IStoppable {
      */
     public static void main(String[] args) {
         Thread.currentThread().setName(Constants.THREAD_NAME_WORKER_SERVER);
-        new SpringApplicationBuilder(WorkerServer.class).web(WebApplicationType.NONE).run(args);
+        new SpringApplicationBuilder(WorkerServer.class)
+            .profiles("worker")
+            .run(args);
     }
 
     /**

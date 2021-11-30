@@ -57,19 +57,16 @@ public class CommonTaskProcessor extends BaseTaskProcessor {
     @Autowired
     NettyExecutorManager nettyExecutorManager = SpringApplicationContext.getBean(NettyExecutorManager.class);
 
-    /**
-     * logger of MasterBaseTaskExecThread
-     */
-    protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public boolean submit(TaskInstance task, ProcessInstance processInstance, int maxRetryTimes, int commitInterval) {
         this.processInstance = processInstance;
-        this.taskInstance = processService.submitTask(task, maxRetryTimes, commitInterval);
+        this.taskInstance = processService.submitTaskWithRetry(processInstance, task, maxRetryTimes, commitInterval);
 
         if (this.taskInstance == null) {
             return false;
         }
+        setTaskExecutionLogger();
         dispatchTask(taskInstance, processInstance);
         return true;
     }
